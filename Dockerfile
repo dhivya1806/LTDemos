@@ -1,14 +1,16 @@
 # Stage 1: Build the Java application
 FROM eclipse-temurin:17-jdk AS builder
  
-# Set working directory
 WORKDIR /app
+ 
+# Install Maven
+RUN apt update && apt install -y maven
  
 # Copy project files
 COPY . .
  
 # Build the application using Maven
-RUN ./mvnw clean package -DskipTests
+RUN mvn clean package -DskipTests
  
 # Stage 2: Create a minimal runtime image with a non-root user
 FROM eclipse-temurin:17-jre
@@ -28,8 +30,8 @@ RUN chown -R appuser:appuser /app
 # Switch to non-root user
 USER appuser
  
-# Expose application port (modify as needed)
-EXPOSE 3000
+# Expose application port
+EXPOSE 8080
  
 # Run the Java application
 CMD ["java", "-jar", "app.jar"]
